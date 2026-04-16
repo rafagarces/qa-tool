@@ -38,98 +38,119 @@ This is a one-time setup. Once done, running a QA check takes about 30 seconds.
 
 ### Step 1: Install Claude Code
 
-Claude Code is a terminal tool made by Anthropic. You need a paid plan.
+Claude Code is a terminal tool made by Anthropic. You need a paid plan (Max or Team).
 
 **On Mac:**
 
-Open Terminal (press `Cmd + Space`, type "Terminal", press Enter) and paste:
+Open Terminal (press `Cmd + Space`, type "Terminal", press Enter) and paste this command:
 
 ```bash
 npm install -g @anthropic-ai/claude-code
 ```
 
-> **Don't have npm?** Install Node.js first from https://nodejs.org (download the LTS version, run the installer, then try the command above again).
+> **Don't have npm?** Install Node.js first:
+> 1. Go to https://nodejs.org
+> 2. Download the **LTS** version (the big green button)
+> 3. Open the downloaded file and follow the installer
+> 4. Close Terminal and open it again
+> 5. Now try the command above again
 
-Verify it worked:
+Check it worked — paste this and press Enter:
 
 ```bash
 claude --version
 ```
 
-You should see a version number like `2.x.x`.
+You should see something like `2.1.72`.
 
-**First-time login:**
+### Step 2: Log in to Claude Code
+
+In Terminal, type:
 
 ```bash
 claude
 ```
 
-This opens a browser window to log in with your Anthropic account. Follow the prompts.
+A browser window will open. Log in with your Anthropic account and follow the prompts. Once done, you'll see the Claude Code prompt in your terminal.
 
-### Step 2: Install the Figma plugin
+### Step 3: Install the Figma plugin
 
-This lets Claude Code read your Figma designs. Inside Claude Code, type:
+This lets Claude Code read your Figma designs. **Inside Claude Code** (you should see a `>` prompt), type:
 
 ```
 /install-plugin figma
 ```
 
-Follow the prompts. It will ask you to connect your Figma account.
+Follow the prompts. It will connect to your Figma account.
 
-> **Alternative:** If that doesn't work, you can set it up manually by adding a Figma personal access token. Go to https://www.figma.com/developers/api#access-tokens, create a token, then in Claude Code type:
-> ```
-> /config
-> ```
-> And add your token under environment variables as `FIGMA_API_TOKEN`.
+> **If that doesn't work**, you can set it up manually:
+> 1. Go to https://www.figma.com/developers/api#access-tokens
+> 2. Click "Create a new personal access token"
+> 3. Copy the token
+> 4. In Claude Code, type `/config`
+> 5. Add your token as `FIGMA_API_TOKEN`
 
-### Step 3: Install the Playwright plugin
+### Step 4: Install the Playwright plugin
 
-This lets Claude Code open and inspect web pages (your Storybook). Inside Claude Code, type:
+This lets Claude Code open and inspect web pages (your Storybook). **Inside Claude Code**, type:
 
 ```
 /install-plugin playwright
 ```
 
-### Step 4: Install the GitHub CLI
+### Step 5: Install the GitHub CLI
 
-This is needed to create shareable links. In your terminal (not Claude Code):
-
-**On Mac:**
+This is needed to create shareable report links. **In Terminal** (not inside Claude Code — press `Ctrl+C` to exit Claude Code first if needed):
 
 ```bash
 brew install gh
 ```
 
-> **Don't have Homebrew?** Install it from https://brew.sh (paste the command shown on that page into Terminal).
+> **Don't have Homebrew?** 
+> 1. Go to https://brew.sh
+> 2. Copy the command shown on that page
+> 3. Paste it in Terminal and press Enter
+> 4. Follow the prompts (it may ask for your Mac password)
+> 5. Then try `brew install gh` again
 
-Then log in:
+Log in to GitHub:
 
 ```bash
 gh auth login
 ```
 
-Choose "GitHub.com", then "HTTPS", then follow the browser prompts.
+Choose these options when asked:
+- **Where do you use GitHub?** → GitHub.com
+- **Protocol** → HTTPS
+- **Authenticate** → Login with a web browser
 
-### Step 5: Install the QA skill
+Follow the browser prompts to finish.
 
-This is the actual QA tool. In your terminal:
+### Step 6: Clone this repo
+
+This gives you the QA skill automatically — no extra install needed.
 
 ```bash
-mkdir -p ~/.claude/skills/qa-design-system
-curl -o ~/.claude/skills/qa-design-system/SKILL.md https://raw.githubusercontent.com/rafagarces/qa-tool/main/skill/SKILL.md
+cd ~/Desktop
+git clone https://github.com/rafagarces/qa-tool.git
 ```
 
-> **Alternative (manual):** Create the folder `~/.claude/skills/qa-design-system/` and copy the `SKILL.md` file from this repo's `skill/` folder into it.
+> **Don't have git?** If you see "command not found", run `xcode-select --install` first, then try again.
+
+That's it! The `/qa-design-system` skill is bundled inside the repo at `.claude/skills/`.
 
 ---
 
 ## Running a QA check
 
-### 1. Open Claude Code
+### 1. Open Claude Code in the repo folder
 
 ```bash
+cd ~/Desktop/qa-tool
 claude
 ```
+
+> **Important:** You must be inside the `qa-tool` folder for the skill to be available. If you open Claude Code from a different folder, it won't find the skill.
 
 ### 2. Run the skill
 
@@ -141,15 +162,22 @@ Type:
 
 ### 3. Provide the links
 
-Claude will ask for two URLs. Paste them one at a time:
+Claude will ask for two URLs. Here's how to get them:
 
-- **Figma component URL** — Right-click a component in Figma, choose "Copy link to selection"
-  
-  Example: `https://www.figma.com/design/poaMyU7abAgL9VRhx4ygyy/Unity-DS-Components-Library?node-id=19-3853`
+**Figma URL:**
+1. Open the component in Figma
+2. Right-click on the component frame
+3. Click **"Copy/Paste as"** → **"Copy link"**
+4. Paste it into Claude Code
 
-- **Storybook component URL** — Open the component in Storybook and copy the URL from your browser
-  
-  Example: `https://unity-components.payfit.io/?path=/docs/component-reference-avatar--docs`
+Example: `https://www.figma.com/design/poaMyU7abAgL9VRhx4ygyy/Unity-DS-Components-Library?node-id=19-3853`
+
+**Storybook URL:**
+1. Open the component page in Storybook in your browser
+2. Copy the URL from the address bar
+3. Paste it into Claude Code
+
+Example: `https://unity-components.payfit.io/?path=/docs/component-reference-avatar--docs`
 
 ### 4. Wait for the analysis
 
@@ -158,34 +186,31 @@ Claude will:
 - Open Storybook in a browser and inspect the actual CSS
 - Compare everything and flag discrepancies
 
-This takes 1-2 minutes.
+This takes 1-2 minutes. You'll see progress in the terminal.
 
 ### 5. Get your results
 
-You'll see:
-- The full report right in your terminal
-- A saved `.md` file in your current folder
-- A shareable link like:
+You'll see the full report in your terminal, plus:
 
 ```
 📄 Report saved: ./qa-report-avatar.md
 🔗 Share with your team: https://rafagarces.github.io/qa-tool/?gist=abc123def456
 ```
 
-Send that link to anyone — they'll see the formatted report in their browser, no setup needed.
+**Send that link to anyone** — they'll see the formatted report in their browser. No setup needed on their end.
 
 ---
 
-## Viewing reports (no install needed)
+## Viewing reports (no setup needed)
 
-If someone sends you a QA report link, just open it in your browser:
+If someone sends you a QA report link, just **click it**. It opens in your browser:
 
 ```
-https://rafagarces.github.io/qa-tool/?gist=GIST_ID
+https://rafagarces.github.io/qa-tool/?gist=abc123def456
 ```
 
 You can also go to https://rafagarces.github.io/qa-tool/ and:
-- **Paste** markdown directly
+- **Paste** a report's markdown text
 - **Upload** a `.md` file
 - **Load an example** to see what reports look like
 
@@ -215,38 +240,47 @@ You can also go to https://rafagarces.github.io/qa-tool/ and:
 ## Troubleshooting
 
 **"Command not found: claude"**
-- Make sure you installed Claude Code: `npm install -g @anthropic-ai/claude-code`
+- Run `npm install -g @anthropic-ai/claude-code`
 - Close and reopen Terminal, then try again
 
 **"Command not found: gh"**
-- Install GitHub CLI: `brew install gh`
-- Then log in: `gh auth login`
+- Run `brew install gh`, then `gh auth login`
 
 **"Command not found: npm"**
-- Install Node.js from https://nodejs.org (LTS version)
+- Install Node.js from https://nodejs.org (click the LTS button)
+- Close and reopen Terminal
+
+**"Command not found: brew"**
+- Go to https://brew.sh and follow the install instructions
+
+**"Command not found: git"**
+- Run `xcode-select --install` and follow the prompts
 
 **Figma extraction fails**
-- Make sure Figma desktop app is open with the file
-- Try running `/install-plugin figma` again in Claude Code
+- Make sure the Figma desktop app is open with the file
+- Try `/install-plugin figma` again inside Claude Code
 
 **Storybook inspection fails**
-- Make sure the Storybook URL is accessible (try opening it in your browser first)
-- Try running `/install-plugin playwright` again in Claude Code
+- Make sure the Storybook URL works in your browser first
+- Try `/install-plugin playwright` again inside Claude Code
 
-**"Skill not found" when typing /qa-design-system**
-- Re-run the install command from Step 5 above
-- Make sure the file exists: `ls ~/.claude/skills/qa-design-system/SKILL.md`
+**"/qa-design-system" not found**
+- Make sure you're running Claude Code from inside the `qa-tool` folder:
+  ```bash
+  cd ~/Desktop/qa-tool
+  claude
+  ```
 
 ---
 
 ## Development
 
-This is the source code for the report viewer web app.
+Source code for the report viewer web app.
 
 ```bash
 npm install
 npm run dev     # Start dev server at localhost:5174
-npm run build   # Production build to dist/
+npm run build   # Production build
 ```
 
 Deploys automatically to GitHub Pages on push to `main`.

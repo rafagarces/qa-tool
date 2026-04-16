@@ -1,17 +1,16 @@
 import { useState, useEffect, useCallback } from 'react'
 import { Header } from './components/Header'
-import { ReportInput } from './components/ReportInput'
+import { LandingPage } from './components/LandingPage'
 import { ReportView } from './components/ReportView'
 import { GistLoader } from './components/GistLoader'
 
-type View = 'input' | 'loading-gist' | 'report'
+type View = 'landing' | 'loading-gist' | 'report'
 
 function App() {
-  const [view, setView] = useState<View>('input')
+  const [view, setView] = useState<View>('landing')
   const [report, setReport] = useState<string | null>(null)
   const [gistId, setGistId] = useState<string | null>(null)
 
-  // Check URL for ?gist= parameter on load
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
     const gist = params.get('gist')
@@ -28,26 +27,20 @@ function App() {
 
   function handleGistError() {
     setGistId(null)
-    setView('input')
+    setView('landing')
   }
 
-  function handleReportSubmit(markdown: string) {
-    setReport(markdown)
-    setView('report')
-  }
-
-  const handleNewReport = useCallback(() => {
+  const handleBackToHome = useCallback(() => {
     setReport(null)
     setGistId(null)
-    setView('input')
-    // Clean the URL
+    setView('landing')
     window.history.replaceState({}, '', window.location.pathname)
   }, [])
 
   return (
     <div className="min-h-screen bg-slate-50">
-      <Header />
-      <main className="px-4 pb-12 pt-6">
+      <Header showHome={view === 'report'} onHome={handleBackToHome} />
+      <main>
         {view === 'loading-gist' && gistId && (
           <GistLoader
             gistId={gistId}
@@ -55,11 +48,9 @@ function App() {
             onError={handleGistError}
           />
         )}
-        {view === 'input' && (
-          <ReportInput onReport={handleReportSubmit} />
-        )}
+        {view === 'landing' && <LandingPage />}
         {view === 'report' && report && (
-          <ReportView report={report} onNewQA={handleNewReport} />
+          <ReportView report={report} onNewQA={handleBackToHome} />
         )}
       </main>
     </div>
